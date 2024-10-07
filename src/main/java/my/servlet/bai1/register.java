@@ -6,17 +6,23 @@ package my.servlet.bai1;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 /**
  *
  * @author ADMIN
  */
 @WebServlet(name = "register", urlPatterns = {"/register"})
+@MultipartConfig
 public class register extends HttpServlet {
 
     /**
@@ -31,22 +37,34 @@ public class register extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //b1
-        String hoten =request.getParameter("hoten");
-        String gioitinh=request.getParameter("gioitinh");
-        String[] sothich=request.getParameterValues("sothich");
-        Part par=request.getPart("hinh");
+        String hoten = request.getParameter("hoten");
+        String gioitinh = request.getParameter("gioitinh");
+        String[] sothich = request.getParameterValues("sothich");
+        Part part = request.getPart("hinh");
         //b2
-        String realpath=request.getServletContext().getr
+        String realpath = request.getServletContext().getRealPath("uploads");
+        if (!Files.exists(Paths.get(realpath))) {
+            Files.createDirectories(Paths.get(realpath));
+        }
+        String filename = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+        part.write(realpath + "/" + filename);
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet register</title>");            
+            out.println("<title>Servlet register</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet register at " + request.getContextPath() + "</h1>");
+            out.println("<h1>THONG TIN DANG KY</H1>");
+            out.println("<hr>");
+            out.println("<ul>");
+            out.println("<li>Ho ten <b>" + hoten + "</b>");
+            out.println("<li>Gioi tinh <b>" + gioitinh + "</b>");
+            out.println("<li>So thich <b>" + Arrays.toString(sothich) + "</b>");
+            out.println("<li>Anh dai dien <br> <img src='uploads/" + filename + "' width='200px'>");
+            out.println("</ul>");
             out.println("</body>");
             out.println("</html>");
         }
